@@ -75,43 +75,83 @@ ReferralOS operates as an active, stateful coordination layer across regional he
 
 ---
 
+## Repository Architecture & Layout
+
+ReferralOS is structured as a clean monorepo:
+
+```text
+referralos/
+├── backend/                  # High-performance Core Engine (Node.js/Fastify/TypeScript)
+│   ├── src/                  # Application source code
+│   │   ├── config/           # Environment and runtime configuration
+│   │   ├── infrastructure/   # PostgreSQL (PostGIS) pool & Redis distributed lock clients
+│   │   ├── models/           # TypeScript domain types and schemas
+│   │   ├── routes/           # Fastify REST & SSE controllers
+│   │   ├── services/         # Matching engine, capacity store, failover watcher, audit logs
+│   │   └── utils/            # Geospatial Haversine and road travel calculations
+│   ├── migrations/           # SQL schema migrations (PostGIS enabled)
+│   ├── scripts/              # Seeders and PPH scenario simulation runner
+│   ├── tests/                # Full Unit & Integration Test Suites
+│   ├── package.json
+│   └── tsconfig.json
+├── frontend/                 # Web Dashboard & Ambulance Terminal (Next.js / Tailwind)
+├── docs/                     # Comprehensive architectural and clinical documentation
+├── README.md
+└── package.json              # Root workspace delegation scripts
+```
+
+---
+
 ## Quickstart & Local Setup
 
 ### Prerequisites
-- [Docker](https://www.docker.com/) and Docker Compose v2+
-- [Node.js](https://nodejs.org/) v20+ or [Go](https://golang.org/) 1.22+
-- Git
+- [Node.js](https://nodejs.org/) v18+ or v20+
+- PostgreSQL 16 with PostGIS extension (e.g., [Neon](https://neon.tech) or local)
+- Redis 7+ (e.g., [Upstash](https://upstash.com) or local)
 
 ### 1. Clone & Configure
 ```bash
 git clone https://github.com/divinefavourak/referralos.git
 cd referralos
-cp .env.example .env
+cp backend/.env.example backend/.env
+# Configure your DATABASE_URL and REDIS_URL in backend/.env
 ```
 
-### 2. Start Infrastructure via Docker Compose
+### 2. Install Dependencies
 ```bash
-docker compose up -d postgres redis rabbitmq
+npm install
+# Or: cd backend && npm install
 ```
 
-### 3. Run Database Migrations & Seeds
+### 3. Run Database Migrations & Seed Dataset
 ```bash
 npm run db:migrate
 npm run db:seed
 ```
+This enables the `postgis` extension, creates all relational tables, and seeds the regional network: St. Mary's PHC, Hospital A (theatres offline), Hospital B (all available), and Hospital C (standby).
 
-### 4. Start the Development Server
+### 4. Run Full Test Suite (Unit & Integration)
+```bash
+npm run test
+# Or unit tests only:
+npm --prefix backend run test:unit
+# Or integration tests:
+npm --prefix backend run test:integration
+```
+All tests verify geospatial calculations, two-phase constraint satisfaction, Redis atomic multi-resource locking, conflict rejection (409 Conflict), and automated failover rerouting.
+
+### 5. Start the Backend API Gateway
 ```bash
 npm run dev
 # The API gateway runs on http://localhost:8080
-# The Web Dashboard runs on http://localhost:3000
+# Health check: http://localhost:8080/health
 ```
 
-### 5. Simulate the Postpartum Haemorrhage (PPH) Demo
+### 6. Simulate the Postpartum Haemorrhage (PPH) Live Demo
 ```bash
 npm run demo:pph-scenario
 ```
-This script initializes a simulated referral, performs matching, establishes locks, simulates an in-transit theatre failure at Hospital B, and demonstrates automated rerouting to Hospital C.
+This script initializes a simulated referral, performs matching, establishes locks, simulates an in-transit theatre failure at Hospital B, demonstrates automated rerouting to Hospital C from the ambulance's live GPS coordinate, and completes QR clinical handover.
 
 ---
 

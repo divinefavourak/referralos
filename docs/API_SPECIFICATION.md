@@ -173,6 +173,34 @@ Update the status of a specific hospital asset.
 }
 ```
 
+#### `POST /api/v1/facilities/{id}/capacity/{resource_id}/override`
+Trigger emergency local preemption (e.g. unexpected walk-in patient requiring immediate resuscitation). If the resource was previously locked for an in-transit referral, this invalidates the reservation and fires an automated reroute for the ambulance.
+
+- **Request Body:**
+```json
+{
+  "reason": "Critical walk-in resuscitation required immediately on-site"
+}
+```
+
+- **Success Response (`200 OK`):**
+```json
+{
+  "success": true,
+  "data": {
+    "id": "res_theatre_03",
+    "facility_id": "fac_01HJ8WXYZ1234567890ABCDEF",
+    "status": "OCCUPIED",
+    "preempted_by": "LOCAL_WALK_IN"
+  },
+  "meta": {
+    "preempted": true,
+    "action": "EMERGENCY_LOCAL_PREEMPTION_TRIGGERED",
+    "timestamp": "2026-09-18T00:41:00Z"
+  }
+}
+```
+
 #### `POST /api/v1/capacity/heartbeat`
 IoT gateway telemetry ingestion for equipment uptime and medical gas pressure.
 
