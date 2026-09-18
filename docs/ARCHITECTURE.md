@@ -1,4 +1,4 @@
-﻿# ReferralOS: System Architecture & Operational Workflow
+# ReferralOS: System Architecture & Operational Workflow
 
 ## 1. How ReferralOS Works: The 7-Step Workflow
 
@@ -146,3 +146,35 @@ ReferralOS is built as an event-driven microservices architecture designed for s
 ### 3.6 Notification & Dispatch Hub
 - **Multi-Transport Notification:** Delivers events through WebSockets, Web Push (FCM), SMS (Twilio/local telco gateways), and automated IVR phone alerts.
 - **Fallback Hierarchy:** If WebSocket acknowledgement is not received within 30 seconds for critical alerts, the system automatically falls back to SMS and high-priority voice calls.
+
+---
+
+## 4. Repository Layout & Runtime Implementation
+
+ReferralOS is structured as a workspace monorepo separating the high-concurrency routing engine from client presentation dashboards:
+
+```text
+referralos/
+├── backend/                  # Fastify / Node.js / TypeScript Core Engine
+│   ├── src/
+│   │   ├── config/           # Validated environment configuration (Neon, Upstash, JWT)
+│   │   ├── infrastructure/   # PostgreSQL connection pool and Redis Redlock Lua scripts
+│   │   ├── models/           # Domain TypeScript types and interfaces
+│   │   ├── routes/           # REST & SSE endpoint controllers
+│   │   ├── services/         # Matching engine, capacity manager, failover watcher, audit
+│   │   └── utils/            # Geospatial Haversine & emergency road travel models
+│   ├── migrations/           # SQL schema migrations (PostGIS enabled)
+│   ├── scripts/              # Migration runner, regional seeder, and PPH simulation
+│   └── tests/                # Node.js native unit and integration test suites
+├── frontend/                 # Command Center & Clinical Dashboards (Next.js / Tailwind)
+├── docs/                     # Full architectural, mathematical, and clinical documentation
+├── README.md
+└── package.json              # Workspace root delegation scripts
+```
+
+### Runtime Technologies
+- **Engine Framework:** Node.js (v20+) with Fastify 4.x for low-latency JSON serialization and plugin isolation.
+- **Geospatial & Relational Store:** PostgreSQL 16 + PostGIS extension on Neon serverless PostgreSQL.
+- **Distributed Locks & Pub/Sub:** Redis 7.x with Upstash Redis (TLS protocol with Lua atomicity scripts).
+- **Test Runner:** Native Node.js test runner (`node:test`) with TypeScript execution via `tsx`.
+
