@@ -2,12 +2,12 @@ import { pool, checkDatabaseConnection } from '../src/infrastructure/database.js
 
 export async function seedDatabase() {
   console.log('----------------------------------------------------');
-  console.log('🌱 ReferralOS: Seeding Regional Network Dataset...');
+  console.log('ReferralOS: Seeding Regional Network Dataset...');
   console.log('----------------------------------------------------');
 
   const health = await checkDatabaseConnection();
   if (!health.ok) {
-    console.error('❌ Could not connect to database for seeding.');
+    console.error('[ERROR] Could not connect to database for seeding.');
     process.exit(1);
   }
 
@@ -17,7 +17,7 @@ export async function seedDatabase() {
     await client.query('BEGIN');
 
     // 1. Clean existing records (in reverse dependency order)
-    console.log('🧹 Cleaning previous seed data...');
+    console.log('Cleaning previous seed data...');
     await client.query('DELETE FROM tracking_events');
     await client.query('DELETE FROM transport_assignments');
     await client.query('DELETE FROM reservations');
@@ -28,7 +28,7 @@ export async function seedDatabase() {
     await client.query('DELETE FROM facilities');
 
     // 2. Insert Facilities
-    console.log('🏥 Inserting Regional Facilities...');
+    console.log('Inserting Regional Facilities...');
     const facilities = [
       {
         id: 'fac_phc_st_marys',
@@ -111,7 +111,7 @@ export async function seedDatabase() {
     }
 
     // 3. Insert Capacity Resources
-    console.log('🩺 Inserting Clinical Resources & Operating States...');
+    console.log('Inserting Clinical Resources & Operating States...');
     const resources = [
       // Hospital A resources (NOTE: Theatre is intentionally OFFLINE to trigger hard constraint rejection in PPH demo)
       {
@@ -278,7 +278,7 @@ export async function seedDatabase() {
     }
 
     // 4. Insert Standardized Patient: Amara Okoro (PPH)
-    console.log('👤 Inserting Patient Profile (Amara Okoro)...');
+    console.log('Inserting Patient Profile (Amara Okoro)...');
     await client.query(
       `INSERT INTO patients 
       (id, national_health_id, full_name, date_of_birth, gender, blood_group, known_allergies, emergency_contact)
@@ -302,11 +302,11 @@ export async function seedDatabase() {
     await client.query('COMMIT');
 
     console.log('----------------------------------------------------');
-    console.log('✅ Seed complete: 4 Facilities, 15 Capacity Resources, 1 Patient.');
+    console.log('[OK] Seed complete: 4 Facilities, 15 Capacity Resources, 1 Patient.');
     console.log('----------------------------------------------------');
   } catch (err: any) {
     await client.query('ROLLBACK');
-    console.error('❌ Seeding error:', err.message);
+    console.error('[ERROR] Seeding error:', err.message);
     process.exit(1);
   } finally {
     client.release();

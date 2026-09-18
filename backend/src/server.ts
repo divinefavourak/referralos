@@ -10,12 +10,12 @@ async function startServer() {
       host: config.host,
     });
     console.log('====================================================');
-    console.log(`🚀 ReferralOS API Gateway running on ${address}`);
-    console.log(`📡 Health endpoint: ${address}/health`);
-    console.log(`🔗 API Base: ${address}/api/v1`);
+    console.log(`ReferralOS API Gateway running on ${address}`);
+    console.log(`Health endpoint: ${address}/health`);
+    console.log(`API Base: ${address}/api/v1`);
     console.log('====================================================');
   } catch (err: any) {
-    console.error('❌ Failed to start ReferralOS server:', err.message);
+    console.error('[ERROR] Failed to start ReferralOS server:', err.message);
     process.exit(1);
   }
 }

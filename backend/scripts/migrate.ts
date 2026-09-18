@@ -8,23 +8,23 @@ const __dirname = path.dirname(__filename);
 
 async function runMigrations() {
   console.log('----------------------------------------------------');
-  console.log('🔄 ReferralOS: Running Database Migrations...');
+  console.log('ReferralOS: Running Database Migrations...');
   console.log('----------------------------------------------------');
 
   const health = await checkDatabaseConnection();
   if (!health.ok) {
-    console.error('❌ Could not connect to PostgreSQL. Please verify your DATABASE_URL in .env');
+    console.error('[ERROR] Could not connect to PostgreSQL. Please verify your DATABASE_URL in .env');
     process.exit(1);
   }
 
-  console.log(`✅ Connected to PostgreSQL. PostGIS active: ${health.postgis ? 'YES' : 'Will activate now'}`);
+  console.log(`[OK] Connected to PostgreSQL. PostGIS active: ${health.postgis ? 'YES' : 'Will activate now'}`);
 
   const migrationPath = path.join(__dirname, '../migrations/001_initial_schema.sql');
   const sql = fs.readFileSync(migrationPath, 'utf8');
 
   try {
     await pool.query(sql);
-    console.log('✅ 001_initial_schema.sql executed successfully.');
+    console.log('[OK] 001_initial_schema.sql executed successfully.');
 
     const tablesRes = await pool.query(`
       SELECT table_name
@@ -33,14 +33,14 @@ async function runMigrations() {
       ORDER BY table_name;
     `);
 
-    console.log('📊 Active database tables:');
+    console.log('Active database tables:');
     tablesRes.rows.forEach((row) => console.log(`   - ${row.table_name}`));
 
     console.log('----------------------------------------------------');
-    console.log('🎉 All migrations completed successfully!');
+    console.log('[OK] All migrations completed successfully!');
     console.log('----------------------------------------------------');
   } catch (err: any) {
-    console.error('❌ Migration failed:', err.message);
+    console.error('[ERROR] Migration failed:', err.message);
     process.exit(1);
   } finally {
     await pool.end();

@@ -19,7 +19,7 @@ export class FailoverWatcherService {
 
       await this.subClient.subscribe('capacity.events');
       this.isListening = true;
-      console.log('👀 [FAILOVER WATCHER] Subscribed to capacity.events stream.');
+      console.log('[FAILOVER WATCHER] Subscribed to capacity.events stream.');
 
       this.subClient.on('message', async (channel, message) => {
         if (channel === 'capacity.events') {
@@ -64,7 +64,7 @@ export class FailoverWatcherService {
     }
 
     console.log(
-      `⚠️ [FAILOVER WATCHER] Capacity Drop Detected: Resource ${event.resourceId} at Facility ${event.facilityId} is now ${event.newStatus}.`
+      `[FAILOVER WATCHER] Capacity Drop Detected: Resource ${event.resourceId} at Facility ${event.facilityId} is now ${event.newStatus}.`
     );
 
     // 1. Query for any ACTIVE reservations holding this compromised resource
@@ -78,13 +78,13 @@ export class FailoverWatcherService {
     );
 
     if (resvRes.rows.length === 0) {
-      console.log(`ℹ️ [FAILOVER WATCHER] No active reservations affected by resource ${event.resourceId}.`);
+      console.log(`[FAILOVER WATCHER] No active reservations affected by resource ${event.resourceId}.`);
       return;
     }
 
     for (const compromisedReservation of resvRes.rows) {
       console.log(
-        `🚨 [FAILOVER ALERT] In-transit referral ${compromisedReservation.referral_id} compromised! Initiating automated reroute...`
+        `[FAILOVER ALERT] In-transit referral ${compromisedReservation.referral_id} compromised! Initiating automated reroute...`
       );
 
       // Invalidate current reservation & release remaining non-failed resources
@@ -110,7 +110,7 @@ export class FailoverWatcherService {
           longitude: trackingRes.rows[0].longitude,
         };
         console.log(
-          `📍 [FAILOVER WATCHER] Live ambulance GPS acquired: [${liveCoordinates.latitude}, ${liveCoordinates.longitude}]`
+          `[FAILOVER WATCHER] Live ambulance GPS acquired: [${liveCoordinates.latitude}, ${liveCoordinates.longitude}]`
         );
       }
 
@@ -138,7 +138,7 @@ export class FailoverWatcherService {
 
       if (viableMatches.length === 0) {
         console.error(
-          `❌ [CRITICAL FAILOVER ESCALATION] No alternative facility satisfies hard constraints for referral ${compromisedReservation.referral_id}!`
+          `[CRITICAL FAILOVER ESCALATION] No alternative facility satisfies hard constraints for referral ${compromisedReservation.referral_id}!`
         );
         notificationService.broadcast('referral.escalation', {
           referralId: compromisedReservation.referral_id,
@@ -151,7 +151,7 @@ export class FailoverWatcherService {
 
       const bestAlternative = viableMatches[0];
       console.log(
-        `✅ [FAILOVER MATCH] Selected Alternative: ${bestAlternative.facility.name} (Score: ${bestAlternative.compositeScore}, ETA: ${bestAlternative.travelTimeMinutes} min)`
+        `[FAILOVER MATCH] Selected Alternative: ${bestAlternative.facility.name} (Score: ${bestAlternative.compositeScore}, ETA: ${bestAlternative.travelTimeMinutes} min)`
       );
 
       // Acquire atomic multi-resource locks at the backup hospital
@@ -197,7 +197,7 @@ export class FailoverWatcherService {
       });
 
       console.log(
-        `📢 [FAILOVER COMPLETE] Reroute to ${bestAlternative.facility.name} locked and dispatched.`
+        `[FAILOVER COMPLETE] Reroute to ${bestAlternative.facility.name} locked and dispatched.`
       );
     }
   }

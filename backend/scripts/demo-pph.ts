@@ -14,7 +14,7 @@ async function runPPHScenarioDemo() {
   await seedDatabase();
   console.clear();
   console.log('======================================================================');
-  console.log('🚑 ReferralOS: Severe Postpartum Haemorrhage (PPH) Live Scenario Demo');
+  console.log('ReferralOS: Severe Postpartum Haemorrhage (PPH) Live Scenario Demo');
   console.log('   Simulating: Intelligent Capacity-Based Referral & Mid-Transit Failover');
   console.log('======================================================================\n');
 
@@ -25,13 +25,13 @@ async function runPPHScenarioDemo() {
   // STEP 1: Clinical Presentation & Intake at St. Mary's PHC
   // -------------------------------------------------------------------------
   console.log('----------------------------------------------------------------------');
-  console.log('⏱️  [00:00] Step 1: Acute Presentation at St. Mary\'s Primary Health Centre');
+  console.log('[00:00] Step 1: Acute Presentation at St. Mary\'s Primary Health Centre');
   console.log('----------------------------------------------------------------------');
   console.log('Patient: Amara Okoro (28y F) | G1P1 | Delivered infant at 02:00');
   console.log('Status: Severe uterine atony unresponsive to oxytocin. EBL: 1,200 mL');
   console.log('Vitals: BP 74/42 mmHg | HR 138 bpm | RR 28/min | SpO2 91% (Shock Index: 1.86)\n');
 
-  console.log('📝 Midwife selects "Obstetric Emergency: Postpartum Haemorrhage" Template:');
+  console.log('Midwife selects "Obstetric Emergency: Postpartum Haemorrhage" Template:');
   const referralPayload = {
     patientId: 'pat_pph_amara_okoro',
     referringFacilityId: 'fac_phc_st_marys',
@@ -56,7 +56,7 @@ async function runPPHScenarioDemo() {
   };
 
   const referral = await referralService.createReferral(referralPayload as any);
-  console.log(`✅ Referral ticket created: [${referral.id}] (Status: MATCHING)\n`);
+  console.log(`[CREATED] Referral ticket created: [${referral.id}] (Status: MATCHING)\n`);
 
   await sleep(1500);
 
@@ -64,7 +64,7 @@ async function runPPHScenarioDemo() {
   // STEP 2: Real-Time Constraint Solving & Matching
   // -------------------------------------------------------------------------
   console.log('----------------------------------------------------------------------');
-  console.log('⏱️  [00:06] Step 2: Dynamic Spatial Matching & Constraint Solving');
+  console.log('[00:06] Step 2: Dynamic Spatial Matching & Constraint Solving');
   console.log('----------------------------------------------------------------------');
   console.log('Evaluating regional network capabilities against required clinical bundle:\n');
 
@@ -72,14 +72,14 @@ async function runPPHScenarioDemo() {
 
   for (const m of matches) {
     if (!m.hardConstraintsPassed) {
-      console.log(`❌ ${m.facility.name} (Distance: ${m.distanceKm} km, Travel: ${m.travelTimeMinutes} min)`);
-      console.log(`   ⛔ HARD CONSTRAINT FAILED: ${m.disqualificationReason}`);
-      console.log(`   💡 Outcome: REJECTED (Prevents deadly "nearest hospital" trap!)\n`);
+      console.log(`[REJECTED] ${m.facility.name} (Distance: ${m.distanceKm} km, Travel: ${m.travelTimeMinutes} min)`);
+      console.log(`   [HARD CONSTRAINT FAILED]: ${m.disqualificationReason}`);
+      console.log(`   Outcome: REJECTED (Prevents deadly "nearest hospital" trap!)\n`);
     } else {
-      console.log(`✅ ${m.facility.name} (Distance: ${m.distanceKm} km, Travel: ${m.travelTimeMinutes} min)`);
-      console.log(`   ⭐ Composite Viability Score: ${m.compositeScore} / 100`);
-      console.log(`   📋 Clinical Rationale: ${m.rationale}`);
-      console.log(`   🩺 Matched Resources: [${m.matchedResourceIds.join(', ')}]\n`);
+      console.log(`[ACCEPTED] ${m.facility.name} (Distance: ${m.distanceKm} km, Travel: ${m.travelTimeMinutes} min)`);
+      console.log(`   Composite Viability Score: ${m.compositeScore} / 100`);
+      console.log(`   Clinical Rationale: ${m.rationale}`);
+      console.log(`   Matched Resources: [${m.matchedResourceIds.join(', ')}]\n`);
     }
   }
 
@@ -89,14 +89,14 @@ async function runPPHScenarioDemo() {
     process.exit(1);
   }
 
-  console.log(`🎯 Optimal Destination Selected: ${selectedMatch.facility.name} (Hospital B)`);
+  console.log(`Optimal Destination Selected: ${selectedMatch.facility.name} (Hospital B)`);
   await sleep(1500);
 
   // -------------------------------------------------------------------------
   // STEP 3: Confirmation & Atomic Multi-Resource Lock
   // -------------------------------------------------------------------------
   console.log('----------------------------------------------------------------------');
-  console.log('⏱️  [00:07] Step 3: Midwife Confirms & Acquires Atomic Multi-Resource Lock');
+  console.log('[00:07] Step 3: Midwife Confirms & Acquires Atomic Multi-Resource Lock');
   console.log('----------------------------------------------------------------------');
   console.log('Placing 45-minute atomic distributed TTL lock in Redis on Hospital B:');
   console.log('  - Resuscitation Bay: RESUS-02');
@@ -111,9 +111,9 @@ async function runPPHScenarioDemo() {
     ttlMinutes: 45,
   });
 
-  console.log(`🔒 Atomic Lock Established: [${reservation.id}]`);
-  console.log(`⏳ Lock Lease Expiry: ${reservation.expires_at} (45 min TTL)`);
-  console.log('📢 Pre-Arrival Siren dispatched to Hospital B Emergency Department triage console!\n');
+  console.log(`[LOCKED] Atomic Lock Established: [${reservation.id}]`);
+  console.log(`Lock Lease Expiry: ${reservation.expires_at} (45 min TTL)`);
+  console.log('[DISPATCHED] Pre-Arrival Siren dispatched to Hospital B Emergency Department triage console!\n');
 
   await sleep(1500);
 
@@ -121,7 +121,7 @@ async function runPPHScenarioDemo() {
   // STEP 4: Transport Dispatch & Live Telematics
   // -------------------------------------------------------------------------
   console.log('----------------------------------------------------------------------');
-  console.log('⏱️  [00:10] Step 4: ALS Ambulance Dispatched & Telematics Streaming');
+  console.log('[00:10] Step 4: ALS Ambulance Dispatched & Telematics Streaming');
   console.log('----------------------------------------------------------------------');
   const assignment = await transportService.assignTransport({
     referralId: referral.id,
@@ -131,7 +131,7 @@ async function runPPHScenarioDemo() {
     paramedicName: 'Kelechi Nwosu',
     crewContactPhone: '+2348033221100',
   });
-  console.log(`🚑 Vehicle Dispatched: Unit 04 (ALS) | Driver: ${assignment.driver_name} | Paramedic: ${assignment.paramedic_name}`);
+  console.log(`[DISPATCHED] Vehicle Dispatched: Unit 04 (ALS) | Driver: ${assignment.driver_name} | Paramedic: ${assignment.paramedic_name}`);
 
   // Waypoint 1: Leaving St. Mary's PHC
   await transportService.recordTelemetry({
@@ -143,7 +143,7 @@ async function runPPHScenarioDemo() {
     headingDegrees: 180.0,
     patientVitals: { bp_systolic: 76, bp_diastolic: 44, heart_rate: 136, spo2: 92 },
   });
-  console.log('📍 [00:12] Waypoint 1 logged: Departed St. Mary\'s PHC. Heading to Hospital B. ETA: 38 min.');
+  console.log('[00:12] Waypoint 1 logged: Departed St. Mary\'s PHC. Heading to Hospital B. ETA: 38 min.');
 
   await sleep(1500);
 
@@ -158,7 +158,7 @@ async function runPPHScenarioDemo() {
     headingDegrees: 175.0,
     patientVitals: { bp_systolic: 80, bp_diastolic: 48, heart_rate: 128, spo2: 95 },
   });
-  console.log('📍 [00:20] Waypoint 2 logged: Western Expressway (68 km/h). 16 min from Hospital B.\n');
+  console.log('[00:20] Waypoint 2 logged: Western Expressway (68 km/h). 16 min from Hospital B.\n');
 
   await sleep(2000);
 
@@ -166,11 +166,11 @@ async function runPPHScenarioDemo() {
   // STEP 5: Mid-Transit Capacity Outage Event at Hospital B
   // -------------------------------------------------------------------------
   console.log('----------------------------------------------------------------------');
-  console.log('💥 [00:22] Step 5: IN-TRANSIT DISASTER EVENT AT HOSPITAL B');
+  console.log('[00:22] Step 5: IN-TRANSIT DISASTER EVENT AT HOSPITAL B');
   console.log('----------------------------------------------------------------------');
-  console.log('⚠️ Hospital B main electrical transformer suffers catastrophic fault!');
-  console.log('⚠️ Theatre 3 loses sterile positive-pressure ventilation!');
-  console.log('⚠️ Charge Nurse at Hospital B toggles Theatre 3 to OFFLINE on ReferralOS console...\n');
+  console.log('[ALERT] Hospital B main electrical transformer suffers catastrophic fault!');
+  console.log('[ALERT] Theatre 3 loses sterile positive-pressure ventilation!');
+  console.log('[ALERT] Charge Nurse at Hospital B toggles Theatre 3 to OFFLINE on ReferralOS console...\n');
 
   // Trigger resource failure
   await capacityService.updateResourceStatus(
@@ -186,14 +186,14 @@ async function runPPHScenarioDemo() {
   // STEP 6: Verify Automated Failover & Rerouting
   // -------------------------------------------------------------------------
   console.log('----------------------------------------------------------------------');
-  console.log('⏱️  [00:22:30] Step 6: ReferralOS Automated Failover Watcher in Action');
+  console.log('[00:22:30] Step 6: ReferralOS Automated Failover Watcher in Action');
   console.log('----------------------------------------------------------------------');
 
   const updatedRef = await referralService.getReferralById(referral.id);
-  console.log(`🔄 Referral State: ${updatedRef.status}`);
-  console.log(`🏥 Assigned Facility Updated: ${updatedRef.assigned_facility_name}`);
-  console.log(`🔐 Active Reservation ID: ${updatedRef.active_reservation_id}`);
-  console.log(`🚨 Ambulance Terminal Audio Siren:`);
+  console.log(`Referral State: ${updatedRef.status}`);
+  console.log(`Assigned Facility Updated: ${updatedRef.assigned_facility_name}`);
+  console.log(`Active Reservation ID: ${updatedRef.active_reservation_id}`);
+  console.log(`Ambulance Terminal Audio Siren:`);
   console.log(`   "ATTENTION: Hospital B Theatre Compromised. Rerouting to Hospital C (19 minutes). Turn right on Western Expressway."\n`);
 
   await sleep(1500);
@@ -202,7 +202,7 @@ async function runPPHScenarioDemo() {
   // STEP 7: Arrival, QR Handover & Admission
   // -------------------------------------------------------------------------
   console.log('----------------------------------------------------------------------');
-  console.log('⏱️  [00:43] Step 7: Arrival at Hospital C Bay & Verified Clinical Handover');
+  console.log('[00:43] Step 7: Arrival at Hospital C Bay & Verified Clinical Handover');
   console.log('----------------------------------------------------------------------');
   console.log('Ambulance Unit 04 arrives at Hospital C trauma bay.');
   console.log('Surgical team assembled in Resus Bed 04 with 2 units of thawed O- PRBC ready.');
@@ -214,13 +214,13 @@ async function runPPHScenarioDemo() {
     await referralService.updateStatus(referral.id, 'HANDOVER_COMPLETED');
   }
 
-  console.log('✅ Handover Verified & Completed!');
-  console.log('🔒 Temporary distributed locks committed to: OCCUPIED');
-  console.log('📁 Electronic Pre-Arrival Packet (e-PRP) converted to Permanent Clinical Admission Encounter');
-  console.log('🛡️ Zero avoidable delay. Zero ping-pong. Patient in surgery within the Golden Hour.\n');
+  console.log('[VERIFIED] Handover Verified & Completed!');
+  console.log('Temporary distributed locks committed to: OCCUPIED');
+  console.log('Electronic Pre-Arrival Packet (e-PRP) converted to Permanent Clinical Admission Encounter');
+  console.log('Zero avoidable delay. Zero ping-pong. Patient in surgery within the Golden Hour.\n');
 
   console.log('======================================================================');
-  console.log('🎉 PPH Scenario Simulation Completed Successfully!');
+  console.log('[COMPLETE] PPH Scenario Simulation Completed Successfully!');
   console.log('======================================================================\n');
 }
 
