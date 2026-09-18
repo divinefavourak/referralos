@@ -1,0 +1,46 @@
+{
+  "name": "referralos-backend",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "ReferralOS: Intelligent real-time healthcare referral and capacity routing engine",
+  "main": "dist/server.js",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "db:migrate": "tsx scripts/migrate.ts",
+    "db:seed": "tsx scripts/seed.ts",
+    "demo:pph-scenario": "tsx scripts/demo-pph.ts",
+    "test": "npm run test:unit && npm run test:integration",
+    "test:unit": "tsx --test tests/unit/*.test.ts",
+    "test:integration": "tsx --test tests/integration/api.test.ts && tsx --test tests/integration/failover.test.ts"
+  },
+  "keywords": [
+    "healthcare",
+    "referral",
+    "capacity-management",
+    "emergency",
+    "postgis",
+    "redis-lock"
+  ],
+  "author": "ReferralOS Team",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@fastify/cors": "^9.0.1",
+    "@fastify/jwt": "^8.0.1",
+    "@fastify/sensible": "^5.6.0",
+    "dotenv": "^16.4.5",
+    "fastify": "^4.28.1",
+    "ioredis": "^5.4.1",
+    "pg": "^8.12.0",
+    "uuid": "^10.0.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.9",
+    "@types/pg": "^8.11.6",
+    "@types/uuid": "^10.0.0",
+    "tsx": "^4.16.2",
+    "typescript": "^5.5.3"
+  }
+}
