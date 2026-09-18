@@ -1,7 +1,7 @@
 import { query } from '../../infrastructure/database.js';
 import { CapacityResource, Facility, Match, Referral, RequiredResources } from '../../models/types.js';
 import { estimateRoadTravel, GeoCoordinates } from '../../utils/geo.js';
-import { v4 as uuidv4 } from 'uuid';
+import { randomUUID } from 'node:crypto';
 
 export interface MatchingEvaluationResult {
   facility: Facility;

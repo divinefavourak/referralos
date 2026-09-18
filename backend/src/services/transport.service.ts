@@ -2,7 +2,7 @@ import { query } from '../infrastructure/database.js';
 import { TrackingEvent, TransportAssignment } from '../models/types.js';
 import { estimateRoadTravel } from '../utils/geo.js';
 import { notificationService } from './notification.service.js';
-import { v4 as uuidv4 } from 'uuid';
+import { randomUUID } from 'node:crypto';
 
 export class TransportService {
   async assignTransport(params: {
@@ -20,7 +20,7 @@ export class TransportService {
     const paramedicName = params.paramedicName || (params as any).paramedic_name || 'Kelechi Nwosu';
     const crewContactPhone = params.crewContactPhone || (params as any).crew_contact_phone || '+2348033221100';
 
-    const id = `ta_${uuidv4().replace(/-/g, '').slice(0, 24)}`;
+    const id = `ta_${randomUUID().replace(/-/g, '').slice(0, 24)}`;
 
     const res = await query<any>(
       `INSERT INTO transport_assignments 
@@ -64,7 +64,7 @@ export class TransportService {
     headingDegrees?: number;
     patientVitals?: any;
   }): Promise<TrackingEvent> {
-    const id = `trk_${uuidv4().replace(/-/g, '').slice(0, 24)}`;
+    const id = `trk_${randomUUID().replace(/-/g, '').slice(0, 24)}`;
     const transportAssignmentId = params.transportAssignmentId || (params as any).transport_assignment_id;
     const referralId = params.referralId || (params as any).referral_id;
     const speedKmh = params.speedKmh ?? (params as any).speed_kmh ?? 55.0;

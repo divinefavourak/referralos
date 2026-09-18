@@ -1,6 +1,6 @@
 import { query } from '../infrastructure/database.js';
 import { Patient, Referral, ReferralStatus } from '../models/types.js';
-import { v4 as uuidv4 } from 'uuid';
+import { randomUUID } from 'node:crypto';
 
 export class ReferralService {
   async createReferral(data: {
@@ -12,7 +12,7 @@ export class ReferralService {
     requiredResources: any;
     initialVitals?: any;
   }): Promise<Referral> {
-    const id = `ref_${uuidv4().replace(/-/g, '').slice(0, 24)}`;
+    const id = `ref_${randomUUID().replace(/-/g, '').slice(0, 24)}`;
 
     const res = await query<any>(
       `INSERT INTO referrals 

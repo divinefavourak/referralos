@@ -2,7 +2,7 @@ import { query, withTransaction } from '../infrastructure/database.js';
 import { RedisLockManager } from '../infrastructure/redis.js';
 import { Reservation, ReservationStatus } from '../models/types.js';
 import { auditService } from './audit.service.js';
-import { v4 as uuidv4 } from 'uuid';
+import { randomUUID } from 'node:crypto';
 
 export class LockService {
   private lockManager = new RedisLockManager();
@@ -18,7 +18,7 @@ export class LockService {
     ttlMinutes?: number;
   }): Promise<Reservation> {
     const ttlMinutes = params.ttlMinutes || 45;
-    const reservationId = `resv_${uuidv4().replace(/-/g, '').slice(0, 24)}`;
+    const reservationId = `resv_${randomUUID().replace(/-/g, '').slice(0, 24)}`;
     const expiresAt = new Date(Date.now() + ttlMinutes * 60 * 1000).toISOString();
 
     // 1. First, verify and acquire distributed lock in Redis atomically

@@ -1,5 +1,5 @@
 import { query } from '../infrastructure/database.js';
-import { v4 as uuidv4 } from 'uuid';
+import { randomUUID } from 'node:crypto';
 
 export interface AuditLogEntry {
   entityType: 'REFERRAL' | 'RESERVATION' | 'RESOURCE' | 'FACILITY' | 'TRANSPORT';
@@ -11,7 +11,7 @@ export interface AuditLogEntry {
 
 export class AuditService {
   async logEvent(entry: AuditLogEntry): Promise<void> {
-    const id = `aud_${uuidv4().replace(/-/g, '').slice(0, 24)}`;
+    const id = `aud_${randomUUID().replace(/-/g, '').slice(0, 24)}`;
     try {
       await query(
         `INSERT INTO audit_logs (id, entity_type, entity_id, action, payload, performed_by)
