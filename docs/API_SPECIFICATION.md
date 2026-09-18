@@ -4,10 +4,13 @@
 
 The ReferralOS API is a RESTful and event-driven interface designed for high concurrency, sub-100ms response times, and strict audit compliance across healthcare facilities.
 
-- **Base URL (Production):** `https://api.referralos.org/v1`
-- **Base URL (Staging):** `https://staging-api.referralos.org/v1`
-- **Protocol:** HTTPS / TLS 1.3 (WSS for real-time streams)
+- **Live Cloud Deployment (Render):** `https://referralos.onrender.com/api/v1`
+- **Live Health Check:** `https://referralos.onrender.com/health`
+- **Real-Time SSE Stream:** `https://referralos.onrender.com/api/v1/notifications/stream`
+- **Local Development URL:** `http://localhost:8080/api/v1`
+- **Protocol:** HTTPS / TLS 1.3 (Server-Sent Events for real-time streams)
 - **Data Format:** JSON (`application/json; charset=utf-8`)
+- **CORS:** Enabled (`*`) for seamless frontend development across any port or domain
 
 ---
 

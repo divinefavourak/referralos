@@ -15,6 +15,9 @@ export interface AppConfig {
   jwtExpiresIn: string;
   corsOrigins: string[];
   apiBaseUrl: string;
+  appUrl: string;
+  selfPingEnabled: boolean;
+  selfPingIntervalMs: number;
 }
 
 const dbUrl = process.env.DATABASE_URL || process.env.DB_URL;
@@ -44,5 +47,8 @@ export const config: AppConfig = {
   corsOrigins: (process.env.CORS_ORIGINS || 'http://localhost:3000,http://localhost:8080')
     .split(',')
     .map((origin) => origin.trim()),
-  apiBaseUrl: process.env.API_BASE_URL || 'http://localhost:8080/api/v1',
+  apiBaseUrl: process.env.API_BASE_URL || 'https://referralos.onrender.com/api/v1',
+  appUrl: process.env.APP_URL || process.env.RENDER_EXTERNAL_URL || 'https://referralos.onrender.com',
+  selfPingEnabled: process.env.SELF_PING_ENABLED !== 'false',
+  selfPingIntervalMs: parseInt(process.env.SELF_PING_INTERVAL_MS || '120000', 10), // 2 minutes
 };

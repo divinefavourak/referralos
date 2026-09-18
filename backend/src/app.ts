@@ -2,8 +2,9 @@ import fastify, { FastifyInstance } from 'fastify';
 import cors from '@fastify/cors';
 import { config } from './config/index.js';
 import { checkDatabaseConnection } from './infrastructure/database.js';
-import { getRedisClient, closeRedisClients } from './infrastructure/redis.js';
+import { checkRedisConnection, closeRedisClients } from './infrastructure/redis.js';
 import { failoverWatcherService } from './services/failover-watcher.service.js';
+import { keepAliveService } from './services/keep-alive.service.js';
 
 // Route modules
 import { facilityRoutes } from './routes/facility.routes.js';
@@ -36,13 +37,7 @@ export async function buildApp(): Promise<FastifyInstance> {
 
   app.get('/health', async (request, reply) => {
     const dbHealth = await checkDatabaseConnection();
-    let redisOk = false;
-    try {
-      const redis = getRedisClient();
-      if (redis.status === 'ready') redisOk = true;
-    } catch {
-      redisOk = false;
-    }
+    const redisOk = await checkRedisConnection();
 
     const isHealthy = dbHealth.ok;
     return reply.code(isHealthy ? 200 : 503).send({
@@ -66,15 +61,17 @@ export async function buildApp(): Promise<FastifyInstance> {
     { prefix: '/api/v1' }
   );
 
-  // Initialize background services (Failover Watcher)
+  // Initialize background services (Failover Watcher & Keep-Alive Self-Ping)
   app.addHook('onReady', async () => {
     failoverWatcherService.start().catch((err) => {
       console.warn('[FAILOVER WATCHER START WARNING]', err.message);
     });
+    keepAliveService.start();
   });
 
   // Clean shutdown
   app.addHook('onClose', async () => {
+    keepAliveService.stop();
     await failoverWatcherService.stop();
     await closeRedisClients();
   });

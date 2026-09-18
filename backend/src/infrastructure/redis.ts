@@ -68,6 +68,19 @@ export async function closeRedisClients(): Promise<void> {
   } catch {}
 }
 
+export async function checkRedisConnection(): Promise<boolean> {
+  try {
+    const client = getRedisClient();
+    if (client.status !== 'ready') {
+      await client.connect().catch(() => {});
+    }
+    const pong = await client.ping();
+    return pong === 'PONG';
+  } catch {
+    return false;
+  }
+}
+
 // In-memory fallback if Redis is temporarily unreachable in development
 const memoryLocks = new Map<string, { value: string; expiresAt: number }>();
 const memorySubscribers = new Map<string, Set<(message: string) => void>>();

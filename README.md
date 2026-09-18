@@ -102,6 +102,29 @@ referralos/
 
 ---
 
+## Live Cloud Deployment (For Frontend Integration)
+
+The ReferralOS backend core engine is actively deployed and running on Render with live cloud database and cache connectivity:
+
+| Service | Live URL | Description |
+|---|---|---|
+| **API Base URL** | `https://referralos.onrender.com/api/v1` | All REST endpoints (referrals, capacity, transport, locks) |
+| **Health Check** | `https://referralos.onrender.com/health` | Health status and database/Redis connectivity verification |
+| **Real-Time Stream** | `https://referralos.onrender.com/api/v1/notifications/stream` | Server-Sent Events (SSE) live siren audio & reroute events |
+
+### Frontend `.env.local` Configuration
+Frontend engineers can immediately connect their local or deployed app by setting:
+
+```bash
+NEXT_PUBLIC_API_URL="https://referralos.onrender.com/api/v1"
+NEXT_PUBLIC_HEALTH_URL="https://referralos.onrender.com/health"
+NEXT_PUBLIC_SSE_URL="https://referralos.onrender.com/api/v1/notifications/stream"
+```
+
+*CORS is enabled globally (`*`), allowing the frontend to call the API from `localhost:3000`, Vercel, Netlify, or mobile clients.*
+
+---
+
 ## Quickstart & Local Setup
 
 ### Prerequisites
