@@ -162,7 +162,7 @@ export function Header({
             <span
               className={`h-1.5 w-1.5 rounded-full ${
                 backendHealthy === true
-                  ? 'bg-emerald-500 ring-1 ring-emerald-500/20'
+                  ? 'bg-emerald-500 ring-1/2 ring-emerald-500/20'
                   : backendHealthy === false
                   ? 'bg-red-500 ring-1 ring-red-500/20'
                   : 'bg-amber-400 ring-1 ring-amber-400/20 animate-pulse'

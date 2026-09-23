@@ -172,6 +172,12 @@ export function RegionalCommand({
   ]);
 
   const hasMountedRef = useRef<boolean>(false);
+  const progressRef = useRef<number>(0);
+  const currentStepRef = useRef<number>(currentStepIndex);
+
+  useEffect(() => {
+    currentStepRef.current = currentStepIndex;
+  }, [currentStepIndex]);
 
   // Load facilities from backend or fallback seed
   useEffect(() => {
@@ -184,7 +190,9 @@ export function RegionalCommand({
 
   const handleGoToStep = useCallback((index: number) => {
     setCurrentStepIndex(index);
+    currentStepRef.current = index;
     setStepProgress(0);
+    progressRef.current = 0;
     if (onStepChange) onStepChange(index);
 
     // Ensure audio context is running
@@ -206,10 +214,11 @@ export function RegionalCommand({
     const step = PPH_STEPS[index];
     speakNarrative(`${step.badge}: ${step.title}. ${step.subtitle}`);
 
-    // Append to live log
+    // Append to live log with globally unique ID
+    const uniqueLogId = `log_${Date.now()}_${Math.random().toString(36).slice(2, 9)}_${index}`;
     setEventLogs((prev) => [
       {
-        id: `log_${Date.now()}`,
+        id: uniqueLogId,
         event: step.badge,
         detail: step.title,
         time: step.timecode,
@@ -235,21 +244,22 @@ export function RegionalCommand({
     const progressPerTick = (INTERVAL_MS / STEP_DURATION_MS) * 100;
 
     const interval = setInterval(() => {
-      setStepProgress((prev) => {
-        if (prev >= 100) {
-          if (currentStepIndex < PPH_STEPS.length - 1) {
-            handleGoToStep(currentStepIndex + 1);
-          } else {
-            setIsPlaying(false);
-          }
-          return 0;
+      progressRef.current += progressPerTick;
+      if (progressRef.current >= 100) {
+        progressRef.current = 0;
+        setStepProgress(0);
+        if (currentStepRef.current < PPH_STEPS.length - 1) {
+          handleGoToStep(currentStepRef.current + 1);
+        } else {
+          setIsPlaying(false);
         }
-        return prev + progressPerTick;
-      });
+      } else {
+        setStepProgress(progressRef.current);
+      }
     }, INTERVAL_MS);
 
     return () => clearInterval(interval);
-  }, [isPlaying, currentStepIndex, handleGoToStep]);
+  }, [isPlaying, handleGoToStep]);
 
   const handleTogglePlay = () => {
     ensureAudioResumed();
@@ -289,18 +299,18 @@ export function RegionalCommand({
       {/* Persona Role & Scenario Context Banner */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 rounded-2xl border border-sky-200 bg-sky-50/70 p-4 sm:p-5 shadow-xs">
         <div className="flex items-center gap-3.5">
-          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#0284C7] text-white shrink-0 shadow-sm shadow-sky-600/20">
-            <Radio className="h-5 w-5" />
+          <div className="flex h-11 w-11 items-center justify-center rounded-lg text-white shrink-0 shadow-sm shadow-sky-600/20">
+            <Radio className="h-5 w-5" stroke='#0284C7' />
           </div>
           <div>
             <div className="flex items-center gap-2">
               <span className="rounded-full bg-sky-200/80 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-sky-950">
-                Stage 4 of 4 • District Coordination &amp; Audit Trail
+                Stage 4 of 4
               </span>
               <span className="text-xs font-bold text-slate-900">District Healthcare Operations Command</span>
             </div>
             <p className="text-xs text-slate-700 mt-1 font-medium leading-relaxed">
-              Step-by-step case study demonstrating how ReferralOS averted the nearest-hospital trap, reserved operating capacity, and successfully rerouted in transit within the 60-minute golden hour.
+              Step-by-step case study demonstrating how ReferralOS averted the nearest-hospital trap, reserved operating capacity, <br />and successfully rerouted in transit within the 60-minute golden hour.
             </p>
           </div>
         </div>
@@ -318,8 +328,8 @@ export function RegionalCommand({
       <div className="rounded-2xl border border-slate-200 bg-white p-6 sm:p-7 shadow-xs relative overflow-hidden">
         <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-100 pb-4 mb-6">
           <div className="flex items-center gap-3.5">
-            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#0284C7] text-white shadow-sm shadow-sky-600/20">
-              <HeartPulse className="h-5 w-5" />
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl text-white ">
+              <HeartPulse className="h-5 w-5" stroke='#0284C7' />
             </div>
             <div>
               <div className="flex items-center gap-2">
@@ -349,7 +359,7 @@ export function RegionalCommand({
               title={!isAudioMuted ? 'Clinical Sound active (click to mute)' : 'Clinical Sound muted (click to unmute)'}
             >
               {!isAudioMuted ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
-              <span className="hidden sm:inline">{!isAudioMuted ? 'Sound On' : 'Muted'}</span>
+              <span className="hidden sm:inline">{!isAudioMuted ? '' : ''}</span>
             </button>
 
             {/* Voice Narration Toggle */}
@@ -363,7 +373,7 @@ export function RegionalCommand({
               title={isVoiceEnabled ? 'Voice narration active (click to disable)' : 'Voice narration off (click to enable)'}
             >
               {isVoiceEnabled ? <Mic className="h-4 w-4" /> : <MicOff className="h-4 w-4" />}
-              <span className="hidden sm:inline">{isVoiceEnabled ? 'Voice On' : 'Voice Off'}</span>
+              <span className="hidden sm:inline">{isVoiceEnabled ? '' : ''}</span>
             </button>
 
             <div className="h-5 w-px bg-slate-200 mx-1 hidden sm:block" />
@@ -384,12 +394,10 @@ export function RegionalCommand({
               {isPlaying ? (
                 <>
                   <Pause className="h-4 w-4" />
-                  <span>Pause Story</span>
                 </>
               ) : (
                 <>
                   <Play className="h-4 w-4" />
-                  <span>Play Narrative</span>
                 </>
               )}
             </button>
@@ -418,7 +426,7 @@ export function RegionalCommand({
         {/* Live Step Progress Countdown Bar */}
         <div className="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden mb-6 -mt-2">
           <div
-            className="h-full bg-gradient-to-r from-sky-400 via-[#0284C7] to-emerald-500 rounded-full transition-all duration-75 ease-linear"
+            className="h-full bg-gradient-to-r from-sky-400 via-[#0284C7] to-sky-400 rounded-lg transition-all duration-75 ease-linear"
             style={{
               width: isPlaying ? `${stepProgress}%` : currentStepIndex === PPH_STEPS.length - 1 ? '100%' : '0%',
             }}
@@ -448,7 +456,7 @@ export function RegionalCommand({
                   </span>
                   <span className="font-semibold text-slate-400">{s.timecode}</span>
                 </div>
-                <h4 className="mt-1 text-xs font-bold text-slate-900 line-clamp-1">{s.title}</h4>
+                <h5 className="mt-1 text-xs font-semibold text-slate-900 line-clamp-2">{s.title}</h5>
 
                 {/* Embedded Mini Progress for Active Step */}
                 {isCurrent && isPlaying && (
@@ -469,11 +477,11 @@ export function RegionalCommand({
           <div className="flex items-center justify-between border-b border-slate-200/80 pb-3.5 mb-4">
             <div className="flex items-center gap-3">
               <span className="text-xs font-bold font-mono text-[#0284C7] bg-white px-2.5 py-1 rounded-lg border border-slate-200 shadow-2xs">
-                Minute {activeStep.timecode}
+                {activeStep.timecode}
               </span>
               <h3 className="text-base font-bold text-slate-900">{activeStep.title}</h3>
             </div>
-            <span className="rounded-full px-3 py-1 text-xs font-bold bg-sky-100 text-sky-800 border border-sky-200">
+            <span className="rounded-full px-3 py-1 text-xs font-bold bg-transparent text-sky-800 border border-sky-200">
               {activeStep.badge}
             </span>
           </div>
@@ -511,7 +519,7 @@ export function RegionalCommand({
           <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-xs">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3.5 mb-4">
               <div className="flex items-center gap-2.5">
-                <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-sky-50 text-[#0284C7]">
+                <div className="flex h-7 w-7 items-center justify-center rounded-lg text-[#0284C7]">
                   <Hospital className="h-4 w-4" />
                 </div>
                 <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900">
@@ -592,21 +600,20 @@ export function RegionalCommand({
           <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-xs">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3.5 mb-4">
               <div className="flex items-center gap-2.5">
-                <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-50 text-emerald-700">
+                <div className="flex h-7 w-7 items-center justify-center rounded-lg text-emerald-700">
                   <Radio className="h-4 w-4" />
                 </div>
                 <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900">
                   Clinical Coordination Feed
                 </h3>
               </div>
-              <span className="flex h-2.5 w-2.5 rounded-full bg-emerald-600 ring-4 ring-emerald-600/20 animate-pulse" />
             </div>
 
             <div className="space-y-2.5 text-xs">
-              {eventLogs.map((log) => (
+              {eventLogs.map((log, idx) => (
                 <div
-                  key={log.id}
-                  className="rounded-xl border border-slate-200 bg-slate-50/60 p-3 text-xs transition-all hover:bg-slate-50"
+                  key={`${log.id}-${idx}`}
+                  className="rounded-xl  p-3 text-xs transition-all hover:bg-slate-50"
                 >
                   <div className="flex items-center justify-between text-[11px] text-slate-500 mb-1">
                     <span className="font-bold text-[#0284C7]">{log.event}</span>

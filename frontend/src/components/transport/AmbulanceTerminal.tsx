@@ -6,7 +6,6 @@ import {
   Navigation,
   Activity,
   AlertTriangle,
-  QrCode,
   Compass,
   ArrowRight,
   ArrowLeft,
