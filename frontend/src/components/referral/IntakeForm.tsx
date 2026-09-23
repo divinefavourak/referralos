@@ -7,7 +7,6 @@ import {
   Activity,
   Zap,
   CheckCircle2,
-  XCircle,
   Clock,
   Lock,
   User,
@@ -722,7 +721,7 @@ export function IntakeForm({ onReferralDispatched }: IntakeFormProps) {
           </div>
           <div>
             <span className="text-[10px] font-bold uppercase text-slate-400">Current Progress</span>
-            <p className="text-xs font-bold text-slate-900">Stage 1: Primary Clinic Triage & Capability Match</p>
+            <p className="text-xs font-bold text-slate-900">Primary Clinic Triage & Capability Match</p>
           </div>
         </div>
 
@@ -730,7 +729,7 @@ export function IntakeForm({ onReferralDispatched }: IntakeFormProps) {
           onClick={() => onReferralDispatched('ref_nav_demo', 'fac_hosp_b_specialist', 'resv_nav_demo')}
           className="w-full sm:w-auto flex items-center justify-center gap-2 rounded-xl bg-[#0284C7] px-5 py-2.5 text-xs font-bold text-white shadow-xs hover:bg-[#0369A1] transition-all active:scale-95"
         >
-          <span>Next: View Hospital ER Desk (Stage 2)</span>
+          <span>View Hospital ER Desk (Stage 2)</span>
           <ArrowRight className="h-4 w-4" />
         </button>
       </div>

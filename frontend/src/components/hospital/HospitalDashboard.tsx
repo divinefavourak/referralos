@@ -5,7 +5,6 @@ import {
   Building2,
   CheckCircle2,
   Volume2,
-  QrCode,
   Droplet,
   Heart,
   Stethoscope,
@@ -152,10 +151,10 @@ export function HospitalDashboard({
   return (
     <div className="space-y-6 pb-12">
       {/* Persona Role & Scenario Context Banner */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 rounded-2xl border border-sky-200 bg-sky-50/70 p-4 sm:p-5 shadow-xs">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 rounded-2xl border border-sky-200 bg-sky-20/50 p-4 sm:p-5 shadow-xs">
         <div className="flex items-center gap-3.5">
-          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#0284C7] text-white shrink-0 shadow-sm shadow-sky-600/20">
-            <Building2 className="h-5 w-5" />
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl text-white shrink-0 shadow-sm shadow-sky-600/20">
+            <Building2 className="h-4 w-4" stroke='#0284C7' />
           </div>
           <div>
             <div className="flex items-center gap-2">
@@ -165,7 +164,8 @@ export function HospitalDashboard({
               <span className="text-xs font-bold text-slate-900">Regional Specialist Hospital (Hospital B)</span>
             </div>
             <p className="text-xs text-slate-700 mt-1 font-medium leading-relaxed">
-              Pre-arrival reservation confirmed for <strong>Amara Okoro</strong>. Operating Theatre 3 &amp; 2 units of O-negative blood are held for 45 minutes. You can also simulate an unexpected power outage to test the automatic reroute.
+              Pre-arrival reservation confirmed for <strong>Amara Okoro</strong>. Operating Theatre 3 &amp;
+              <br /> 2 units of O-negative blood are held for 45 minutes. <br />You can also simulate an unexpected power outage to test the automatic reroute.
             </p>
           </div>
         </div>
@@ -176,8 +176,7 @@ export function HospitalDashboard({
             className="flex items-center gap-1.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white px-3.5 py-2 text-xs font-bold transition-all shadow-xs active:scale-95"
             title="Simulate Theatre Power Surge to trigger live reroute"
           >
-            <Zap className="h-3.5 w-3.5" />
-            <span>Simulate Theatre 3 Failure ⚡</span>
+            <span>Simulate Theatre 3 Failure</span>
           </button>
         </div>
       </div>
@@ -185,8 +184,8 @@ export function HospitalDashboard({
       {/* Facility Switcher Bar */}
       <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-xs">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#0284C7] text-white shadow-xs">
-            <Building2 className="h-5 w-5" />
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl text-white shadow-xs">
+            <Building2 className="h-4 w-4" stroke='#0284C7' />
           </div>
           <div>
             <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900">
@@ -210,7 +209,7 @@ export function HospitalDashboard({
                   onClick={() => setSelectedFacilityId(fac.id)}
                   className={`flex items-center gap-2 rounded-xl px-3.5 py-2 text-xs font-semibold transition-all border ${
                     isSelected
-                      ? 'border-slate-900 bg-slate-900 text-white shadow-xs'
+                      ? 'border-slate-900 bg-transparent text-black shadow-xs'
                       : 'border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100 hover:text-slate-900'
                   }`}
                 >
@@ -238,7 +237,7 @@ export function HospitalDashboard({
             {/* Top Bar with Siren indicator */}
             <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
               <div className="flex items-center gap-2">
-                <span className="flex h-2.5 w-2.5 rounded-full bg-rose-600 ring-4 ring-rose-500/20 animate-pulse" />
+                <span className="flex h-2.5 w-2.5 rounded-full bg-rose-600 ring-rose-500/20 animate-pulse" />
                 <span className="text-xs font-bold uppercase tracking-wider text-rose-700">
                   Inbound Emergency Transfer
                 </span>
@@ -382,10 +381,8 @@ export function HospitalDashboard({
             <div className="mt-4">
               <button
                 onClick={() => setHandoverModalOpen(true)}
-                className="w-full flex items-center justify-center gap-2 rounded-xl bg-[#0284C7] py-3 text-xs font-bold text-white shadow-xs hover:bg-[#0369A1] transition-all active:scale-98"
-              >
-                <QrCode className="h-4 w-4" />
-                <span>Confirm Patient Bedside Handover</span>
+                className="w-full flex items-center justify-center gap-2 rounded-lg bg-[#0284C7] py-3 text-xs font-bold text-white shadow-xs hover:bg-[#0369A1] transition-all active:scale-98"
+              >                <span>Confirm Patient Bedside Handover</span>
               </button>
             </div>
           </div>
@@ -410,7 +407,6 @@ export function HospitalDashboard({
                 className="flex items-center gap-1.5 rounded-lg border border-amber-200 bg-amber-50 px-3 py-1.5 text-xs font-bold text-amber-800 hover:bg-amber-100 transition-all"
                 title="Simulate sudden local walk-in taking the theatre"
               >
-                <Zap className="h-3.5 w-3.5 text-amber-600" />
                 <span>Simulate Emergency Walk-In</span>
               </button>
             </div>
@@ -440,10 +436,10 @@ export function HospitalDashboard({
                         <div
                           className={`flex h-9 w-9 items-center justify-center rounded-xl ${
                             isAvailable
-                              ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                              ? ' text-emerald-700'
                               : isOffline
-                              ? 'bg-rose-50 text-rose-700 border border-rose-200'
-                              : 'bg-amber-50 text-amber-700 border border-amber-200'
+                              ? 'text-rose-700'
+                              : 'text-amber-700'
                           }`}
                         >
                           {res.resource_type === 'OPERATING_THEATRE' ? (
@@ -463,11 +459,11 @@ export function HospitalDashboard({
                               {res.identifier_code}
                             </h5>
                             <span className="text-[11px] text-slate-500 font-medium">
-                              ({res.sub_type})
+                              ({res.sub_type.replace(/_/g, '-')})
                             </span>
                           </div>
                           <p className="text-[11px] text-slate-500 font-medium mt-0.5">
-                            {res.resource_type} • {res.units_in_stock} Units
+                            {res.resource_type.replace(/_/g, '-')} • {res.units_in_stock} Units
                           </p>
                         </div>
                       </div>
@@ -513,9 +509,7 @@ export function HospitalDashboard({
           <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-xl">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
               <div className="flex items-center gap-2">
-                <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-sky-50 text-[#0284C7]">
-                  <QrCode className="h-4 w-4" />
-                </div>
+              
                 <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
                   Patient Arrival Verification
                 </h4>
@@ -579,19 +573,19 @@ export function HospitalDashboard({
           className="w-full sm:w-auto flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-100 transition-all active:scale-95"
         >
           <ArrowLeft className="h-4 w-4" />
-          <span>Previous: Clinic Intake (Stage 1)</span>
+          <span>Clinic Intake (Stage 1)</span>
         </button>
 
         <div className="text-center">
-          <span className="text-[10px] font-bold uppercase text-slate-400">Current Progress</span>
-          <p className="text-xs font-bold text-slate-900">Stage 2: Receiving ER Reservation &amp; Pre-Arrival Hold</p>
+          <span className="text-[10px] font-bold uppercase text-slate-400">Current Stage</span>
+          <p className="text-xs font-bold text-slate-900">Receiving ER Reservation &amp; Pre-Arrival Hold</p>
         </div>
 
         <button
           onClick={() => onNavigateTab?.('ambulance')}
           className="w-full sm:w-auto flex items-center justify-center gap-2 rounded-xl bg-[#0284C7] px-5 py-2.5 text-xs font-bold text-white shadow-xs hover:bg-[#0369A1] transition-all active:scale-95"
         >
-          <span>Next: Ambulance Telematics &amp; Transit (Stage 3)</span>
+          <span>Ambulance Telematics &amp; Transit (Stage 3)</span>
           <ArrowRight className="h-4 w-4" />
         </button>
       </div>
