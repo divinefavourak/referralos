@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Header, ActiveTab } from '@/src/components/Header';
 import { IntakeForm } from '@/src/components/referral/IntakeForm';
 import { HospitalDashboard } from '@/src/components/hospital/HospitalDashboard';
@@ -15,9 +15,34 @@ import {
 import { playSuccessChime } from '@/src/lib/audio';
 
 export default function Home() {
-  const [showPreloader, setShowPreloader] = useState<boolean>(true);
-  const [activeTab, setActiveTab] = useState<ActiveTab>('intake');
-  const [isCompromised, setIsCompromised] = useState<boolean>(false);
+  const [showPreloader, setShowPreloader] = useState<boolean>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        return sessionStorage.getItem('referralos_preloader_seen') !== 'true';
+      } catch {}
+    }
+    return true;
+  });
+  const [activeTab, setActiveTab] = useState<ActiveTab>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const savedTab = sessionStorage.getItem('referralos_stage') as ActiveTab | null;
+        if (savedTab && ['intake', 'hospital', 'ambulance', 'regional'].includes(savedTab)) {
+          return savedTab;
+        }
+      } catch {}
+    }
+    return 'intake';
+  });
+  const [isCompromised, setIsCompromised] = useState<boolean>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const saved = sessionStorage.getItem('referralos_compromised');
+        if (saved !== null) return saved === 'true';
+      } catch {}
+    }
+    return false;
+  });
   const [isResetting, setIsResetting] = useState<boolean>(false);
   const [notificationToast, setNotificationToast] = useState<{
     message: string;
@@ -25,6 +50,20 @@ export default function Home() {
     targetTab?: ActiveTab;
     type: 'success' | 'alert' | 'info';
   } | null>(null);
+
+  // Persist stage changes to session storage
+  useEffect(() => {
+    try {
+      sessionStorage.setItem('referralos_stage', activeTab);
+    } catch {}
+  }, [activeTab]);
+
+  // Persist outage/compromised status to session storage
+  useEffect(() => {
+    try {
+      sessionStorage.setItem('referralos_compromised', String(isCompromised));
+    } catch {}
+  }, [isCompromised]);
 
   const handleReferralDispatched = (
     referralId: string,
@@ -63,7 +102,19 @@ export default function Home() {
     }
   };
 
+  const handlePreloaderComplete = () => {
+    setShowPreloader(false);
+    try {
+      sessionStorage.setItem('referralos_preloader_seen', 'true');
+    } catch {}
+  };
+
   const handleResetDemo = () => {
+    try {
+      sessionStorage.removeItem('referralos_stage');
+      sessionStorage.removeItem('referralos_compromised');
+      sessionStorage.removeItem('referralos_preloader_seen');
+    } catch {}
     setIsResetting(true);
     setIsCompromised(false);
     setActiveTab('intake');
@@ -121,7 +172,7 @@ export default function Home() {
     <div className="min-h-screen flex flex-col bg-[#F8FAFC] text-slate-900">
       {/* Heart Forming & Synchronizing Preloader */}
       {showPreloader && (
-        <HeartPreloader onComplete={() => setShowPreloader(false)} />
+        <HeartPreloader onComplete={handlePreloaderComplete} />
       )}
 
       {/* Top Clinical Header */}

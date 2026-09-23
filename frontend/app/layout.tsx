@@ -25,6 +25,24 @@ export const metadata: Metadata = {
     'postpartum haemorrhage',
   ],
   authors: [{ name: 'ReferralOS Clinical Engineering Team' }],
+  icons: {
+    icon: '/logo.svg',
+    shortcut: '/logo.svg',
+    apple: '/logo.svg',
+  },
+  openGraph: {
+    title: 'ReferralOS | Emergency Healthcare Transfer Coordination',
+    description:
+      'Real-time emergency referral coordination platform matching clinical acuity against verified hospital capability.',
+    siteName: 'ReferralOS',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary',
+    title: 'ReferralOS | Emergency Healthcare Transfer Coordination',
+    description:
+      'Real-time emergency referral coordination platform matching clinical acuity against verified hospital capability.',
+  },
 };
 
 export const viewport = {

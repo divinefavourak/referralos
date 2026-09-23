@@ -14,6 +14,14 @@ export class ReferralService {
   }): Promise<Referral> {
     const id = `ref_${randomUUID().replace(/-/g, '').slice(0, 24)}`;
 
+    // Ensure patient record exists to satisfy foreign key constraint
+    await query(
+      `INSERT INTO patients (id, full_name, gender, blood_group)
+       VALUES ($1, $2, 'UNKNOWN', 'UNKNOWN')
+       ON CONFLICT (id) DO NOTHING`,
+      [data.patientId, data.patientId.startsWith('pat_pph') ? 'Amara Okoro' : `Patient ${data.patientId}`]
+    );
+
     const res = await query<any>(
       `INSERT INTO referrals 
       (id, patient_id, referring_facility_id, triage_priority, chief_complaint, clinical_summary, required_resources, initial_vitals, status)
